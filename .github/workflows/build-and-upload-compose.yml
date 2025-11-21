@@ -1,0 +1,30 @@
+name: Build and upload with compose
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - compose.yaml
+    # runs when compose.yaml in included in push/PR
+  pull_request:
+    branches:
+      - master
+    paths:
+      - compose.yaml
+
+  workflow_dispatch:
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: |
+        docker compose build
+        docker login ghcr.io -u borbely-dominik-peter -p ${{ secrets.GHCR_TOKEN }}
+        docker compose push
